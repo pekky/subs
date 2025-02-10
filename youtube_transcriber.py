@@ -17,7 +17,8 @@ def download_audio(url, output_path="audio.mp3"):
         }],
         'outtmpl': output_path.replace('.mp3', ''),
         'quiet': True,
-        'no_warnings': True
+        'no_warnings': True,
+        'cookies': 'cookies.txt'
     }
     
     try:
