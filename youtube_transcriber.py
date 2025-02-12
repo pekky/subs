@@ -23,7 +23,7 @@ def transcribe_audio(audio_path):
     # 加载模型
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print(f"使用设备: {device}")
-    model = whisperx.load_model("large-v2", device)
+    model = whisperx.load_model("large-v2", device, compute_type="float32")
     
     # 转录音频
     audio = whisperx.load_audio(audio_path)
