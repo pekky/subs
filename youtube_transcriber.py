@@ -5,28 +5,17 @@ import srt
 from datetime import timedelta
 import os
 
-def download_audio(url, output_path="audio.mp3"):
-    """从 YouTube 下载音频"""
-    print("正在下载音频...")
-    ydl_opts = {
-        'format': 'bestaudio/best',
-        'postprocessors': [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',
-            'preferredquality': '192',
-        }],
-        'outtmpl': output_path.replace('.mp3', ''),
-        'quiet': True,
-        'no_warnings': True,
-        'cookies': 'cookies.txt'
-    }
+def download_audio(mp3_path):
+    """从指定路径加载 MP3 音频"""
+    print("正在加载音频...")
     
-    try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([url])
-        print("音频下载完成！")
-    except Exception as e:
-        raise Exception(f"下载失败：{str(e)}")
+    if not os.path.exists(mp3_path):
+        raise FileNotFoundError(f"音频文件未找到：{mp3_path}")
+    
+    # 这里可以添加任何需要的处理逻辑
+    print(f"成功加载音频文件：{mp3_path}")
+    
+    return mp3_path  # 返回音频文件路径
 
 def transcribe_audio(audio_path):
     """使用 WhisperX 进行转录和说话人分离"""
@@ -77,12 +66,11 @@ def create_srt(transcription, output_path="output.srt"):
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(srt.compose(srt_segments))
 
-def process_youtube_video(url):
-    """处理 YouTube 视频的主函数"""
+def process_audio_file(mp3_path):
+    """处理音频文件的主函数"""
     try:
-        # 下载音频
-        audio_path = "audio.mp3"
-        download_audio(url, audio_path)
+        # 加载音频
+        audio_path = download_audio(mp3_path)
         
         # 转录并进行说话人分离
         transcription = transcribe_audio(audio_path)
@@ -91,29 +79,24 @@ def process_youtube_video(url):
         print("正在生成字幕文件...")
         create_srt(transcription)
         
-        # 清理临时文件
-        os.remove(audio_path)
-        
         print("\n✨ 处理完成！字幕文件已保存为 output.srt")
     except Exception as e:
         print(f"\n❌ 错误：{str(e)}")
-        if os.path.exists(audio_path):
-            os.remove(audio_path)
 
 if __name__ == "__main__":
-    print("YouTube 视频转录工具")
+    print("音频转录工具")
     print("-------------------")
     while True:
         try:
-            youtube_url = input("\n请输入 YouTube 视频 URL（输入 q 退出）：").strip()
-            if youtube_url.lower() == 'q':
+            mp3_path = input("\n请输入 MP3 文件路径（输入 q 退出）：").strip()
+            if mp3_path.lower() == 'q':
                 print("感谢使用！")
                 break
-            if not youtube_url:
-                print("URL 不能为空！")
+            if not mp3_path:
+                print("路径不能为空！")
                 continue
                 
-            process_youtube_video(youtube_url)
+            process_audio_file(mp3_path)
             
         except KeyboardInterrupt:
             print("\n\n程序已终止")
