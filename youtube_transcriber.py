@@ -32,7 +32,9 @@ def transcribe_audio(audio_path):
     
     # 加载说话人分离模型
     print("正在进行说话人分离...")
-    diarize_model = whisperx.DiarizationPipeline(use_auth_token=None, device=device)
+    # 获取 Hugging Face 访问令牌
+    huggingface_token = os.getenv('HUGGINGFACE_TOKEN')
+    diarize_model = whisperx.DiarizationPipeline(use_auth_token=huggingface_token, device=device)
     diarize_segments = diarize_model(audio)
     
     # 将说话人信息添加到转录结果中
